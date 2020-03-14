@@ -22,7 +22,7 @@ IMG_SUFFIX = [".jpg", ".png", ".jpeg", ".gif"]
 
 
 def createComicItems(title, content_path, first_img, count):
-    templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div><p class="date">{date}</p></a></li><!--{comic_contents}-->'
+    templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div><p class="date">{date}</p></a></li><!--{comic_contents}-->'
     templete = templete.replace(r"{url}", content_path + CONTENT_HTML)
     templete = templete.replace(r"{title}", title)
     templete = templete.replace(r"{count}", str(count))
