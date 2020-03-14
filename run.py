@@ -4,6 +4,8 @@
 import os
 import time
 import shelve
+# 默认templete模板生成目录与h资源目录相差2层
+BASE_TEMP_DEEPTH = 1
 
 BASE_PATH = os.getcwd()
 # CONTENTS_PATH = BASE_PATH + "/contents"
@@ -75,6 +77,12 @@ def createContentHtml(contentPath):
     options = createOptions(imgData)
     htmlStr = getTempleteHtml(TEMPLETE_HTML)
     title = contentPath.replace(CONTENTS_PATH+"/", "")
+    deepth = "../"
+    d_i = 0
+    while d_i < BASE_TEMP_DEEPTH:
+        deepth += "../"
+        d_i += 1
+    htmlStr = htmlStr.replace(r"{deepth}", deepth)
     htmlStr = htmlStr.replace(r"{imgData}", "var imgData="+str(imgData))
     htmlStr = htmlStr.replace(r"{title}", title).replace(r"{options}", options)
     htmlStr = htmlStr.replace(r"{count}", str(
@@ -149,6 +157,7 @@ if __name__ == '__main__':
     contentPaths = []
     gci(CONTENTS_PATH)
     for contentPath in contentPaths:
+        BASE_TEMP_DEEPTH = contentPath.count('/', 0)
         if checkFileExist(contentPath + CONTENT_HTML):
             continue
         data = createContentHtml(contentPath)
