@@ -1,0 +1,428 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!--==============手机端适应============-->
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <!--===================================-->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--==============强制双核浏览器使用谷歌内核============-->
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="referrer" content="never">
+    <meta http-equiv="content-style-type" content="text/css" />
+    <meta http-equiv="content-script-type" content="text/javascript" />
+    <title>{title}</title>
+    <script type="text/javascript" src="{deepth}h/js/jquery-1.3.2.min.js"></script>
+</head>
+
+
+<base target="_blank">
+<STYLE TYPE="text/css"></STYLE>
+
+<body>
+
+    <center>
+        <div id='content'>
+
+            <H1>{title}</H1>
+            <div id="ph_explain">
+            </div>
+
+            <div id="ph_PageNum"></div>
+            <div id="wrap">
+                <div id="ph_prev"></div>
+                <div id="ph_main_cg">
+                    <div id="imagegallery"></div>
+                </div>
+                <div id="ph_next">></div>
+            </div>
+
+            <div id="phCG_OnOff">幻燈片</div>
+            <span id="phCG_OnOff_TWO"></span>
+            <div id="show_cg_html"></div>
+            <div id="Dfrom"></div>
+            <br><br><br>
+
+
+            <form name=loading>
+                <Span id="MainMenu_but">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    現在頁數為:<input type='text' name='CG_page' id='CG_page' size='1' value=''>
+                    <input type='button' name='inputbuttonBAA' value='跳到頁數' onclick='inputbutton();'>
+                    <input type='button' name='Prev' value='<< 上一頁' onclick='show_Prev();'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type='button' name='CG_TOP' value='到上面TOP↑' onclick='CG_top_f();'>
+                    <input type='button' name='Next' value='下一頁 >>' style='width: 100px;' onclick='show_Next();'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type='button' name='widthchangA' value='圖片寬度調整' onclick='widthchangin();'>
+                    <input type='text' name='CG_width' size='4' value='800'>
+                    <input type='button' name='widthchangB' value='1000' onclick='widthchangBB(1000);'>
+                    <input type='button' name='widthchangC' value='1200' onclick='widthchangBB(1200);'>
+                    <input type='button' name='widthchangD' value='1500' onclick='widthchangBB(1500);'>
+                </Span>
+                <br><br>
+            </form>
+
+
+
+            <br>
+
+        </div>
+    </center>
+</body>
+
+</html>
+
+
+<script language="javascript">
+    {img class='lazy'Data}
+    Large_cgurl = img class='lazy'Data;
+
+    i = 0;
+    showID = 0;		//初始 頁數==0
+    jpg_star = 1;
+    jpg_end = 10;
+    showtemp = "";
+    Next_but = "<input type='button' name='Next' value='下一頁 >>' onclick='show_Next();'>";
+
+    //建立圖片最大張數 數量/10 ==頁數
+    Large_cgurl_num = Math.ceil((Large_cgurl.length) / 10);
+
+
+    //恢復按鈕
+    function butT() {
+        document.getElementById('MainMenu_but').innerHTML = "";
+
+        if (showID >= Large_cgurl_num) Next_but = "<input type='button' name='Next' value='漫畫結束 >>'>";
+        else Next_but = "<input type='button' name='Next' value='下一頁 >>' style='width: 100px;' onclick='show_Next();'>";
+
+        BBOX_T =
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "現在頁數為:<input type='text' name='CG_page' id='CG_page' size='1' value=''>" +
+            "<input type='button' name='inputbuttonBAA' value='跳到頁數' onclick='inputbutton();'>" +
+            "<input type='button' name='Prev' value='<< 上一頁' onclick='show_Prev();'>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "<input type='button' name='CG_TOP' value='到上面TOP↑' onclick='CG_top_f();'>" +
+            Next_but +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "<input type='button' name='widthchangA' value='圖片寬度調整' onclick='widthchangin();'>" +
+            "<input type='text' name='CG_width' size='4' value='800'>" +
+            "<input type='button' name='widthchangB' value='1000' onclick='widthchangBB(1000);'>" +
+            "<input type='button' name='widthchangC' value='1200' onclick='widthchangBB(1200);'>" +
+            "<input type='button' name='widthchangD' value='1500' onclick='widthchangBB(1500);'>";
+
+        document.getElementById('MainMenu_but').innerHTML = BBOX_T;
+    }
+
+
+    //按鈕凍結
+    function buFF() {
+        document.getElementById('MainMenu_but').innerHTML = "";
+
+        BBOX_F =
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "現在頁數為:<input type='text' name='CG_page' id='CG_page' size='1' value=''>" +
+            "<input type='button' name='inputbuttonBAA' value='跳到頁數' onclick=''>" +
+            "<input type='button' name='Prev' value='<< 上一頁' onclick=''>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "<input type='button' name='CG_TOP' value='到上面TOP↑' onclick='CG_top_f();'>" +
+            "<input type='button' name='Next' value='下一頁 >>' style='width: 100px;' onclick=''>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "<input type='button' name='widthchangA' value='圖片寬度調整' onclick=''>" +
+            "<input type='text' name='CG_width' size='4' value='800'>" +
+            "<input type='button' name='widthchangB' value='1000' onclick=''>" +
+            "<input type='button' name='widthchangC' value='1200' onclick=''>" +
+            "<input type='button' name='widthchangD' value='1500' onclick=''>";
+
+        document.getElementById('MainMenu_but').innerHTML = BBOX_F;
+    }
+
+    var bar = 1;
+    var line = "| ";
+    var amount = "";
+    function count() {
+        bar = bar + 3;
+        //建立進度,符號
+        amount = amount + line;
+
+        //按鈕凍結
+        buFF();
+        //換頁 數字
+        document.getElementById('CG_page').value = showID;
+
+        if (bar < 99) {
+            setTimeout("count();", 100);
+        } else {
+            bar = 1; amount = '';
+
+            //恢復按鈕
+            butT();
+            //換頁 數字
+            document.getElementById('CG_page').value = showID;
+        }
+    }
+
+    //下一頁
+    function show_Next() {
+        showID = showID + 1;
+        jpg_star = (showID - 1) * 10 + 1;
+        jpg_end = showID * 10;
+        show_print();
+    }
+
+    //上一頁
+    function show_Prev() {
+        if (showID <= 1) { showID = Large_cgurl_num + 1; }
+        showID = showID - 1;
+        jpg_star = (showID - 1) * 10 + 1;
+        jpg_end = showID * 10;
+        show_print();
+    }
+
+    //手工輸入頁數，換頁
+    function show_input(ID, pagetop_x) {
+        showID = ID;
+        jpg_star = (showID - 1) * 10 + 1;
+        jpg_end = showID * 10;
+        show_print(pagetop_x);
+    }
+    widthtemp = 799;
+    //手工,寬度調整
+    function widthchangin() {
+        //文字轉數字
+        widthtemp = (document.loading.CG_width.value) * 1 + 0;
+        show_print();
+        picture_carousel();
+    }
+    //按鈕,寬度調整
+    function widthchangBB(ID) {
+        widthtemp = ID;
+        show_print();
+        picture_carousel();
+    }
+
+    //手工輸入頁數，換頁
+    function inputbutton() {
+        //文字轉數字
+        key_page_num = (document.loading.CG_page.value) * 1 + 0;
+        if (key_page_num >= Large_cgurl_num) key_page_num = Large_cgurl_num;
+        show_input(key_page_num);
+    }
+    //到上面TOP
+    function CG_top_f() { window.scrollTo(0, 0); }
+
+    function show_print(pagetop_x) {
+        showtemp = "  ";
+        showpage = "<p><b><font size='6'>您目前在第" + showID + "頁</font></b></p> <br>";
+        showtemp = showtemp + "<center>";
+        for (i = jpg_star; i <= jpg_end; i++) {
+
+            if (i < Large_cgurl.length) {
+
+                if (widthtemp == 799)
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[i] + "' width='100%'><br>";
+                else
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[i] + "' width='" + widthtemp + "'><br>";
+
+                if (i == jpg_end) {
+
+                    //幻燈片緩衝
+                    if (i >= 20) {
+                        showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i - 11)] + "' height='0'>";
+                        showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i - 12)] + "' height='0'>";
+                        showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i - 13)] + "' height='0'>";
+                        showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i - 14)] + "' height='0'>";
+                    }
+                    showtemp = showtemp + "<p align='left'>下一頁預覽圖(緩衝)<br>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 1)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 2)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 3)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 4)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 5)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 6)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 7)] + "' height='100'>";
+                    showtemp = showtemp + "<img class='lazy' border='0' src='" + Large_cgurl[(i + 8)] + "' height='100'></p>";
+                }
+            }
+        }
+        showtemp = showtemp + "</center>";
+        document.getElementById('show_cg_html').innerHTML = showpage + showtemp; count();
+        if (pagetop_x == 'ph_prev_or_ph_next') {
+        } else {
+            //到上面TOP
+            CG_top_f();
+        }
+    }
+    show_input(1);
+
+    /*
+    function reurl(){  
+        url = location.href; 
+        var times = url.split("?"); 
+        if(times[1] != 1){ 
+            url += "?1"; 
+            self.location.replace(url); 
+        }
+    }
+    */
+
+
+    //幻燈片 模組
+    (function ($) {
+        $.fn.touchwipe = function (settings) {
+            var config = {
+                min_move_x: 20,
+                min_move_y: 20,
+                wipeLeft: function () { },
+                wipeRight: function () { },
+                wipeUp: function () { },
+                wipeDown: function () { },
+                preventDefaultEvents: true
+            };
+
+            if (settings) $.extend(config, settings);
+
+            this.each(function () {
+                var startX;
+                var startY;
+                var isMoving = false;
+
+                function cancelTouch() {
+                    this.removeEventListener('touchmove', onTouchMove);
+                    startX = null;
+                    isMoving = false;
+                }
+
+                function onTouchMove(e) {
+                    if (config.preventDefaultEvents) {
+                        e.preventDefault();
+                    }
+                    if (isMoving) {
+                        var x = e.touches[0].pageX;
+                        var y = e.touches[0].pageY;
+                        var dx = startX - x;
+                        var dy = startY - y;
+                        if (Math.abs(dx) >= config.min_move_x) {
+                            cancelTouch();
+                            if (dx > 0) {
+                                config.wipeLeft();
+                            }
+                            else {
+                                config.wipeRight();
+                            }
+                        }
+                        else if (Math.abs(dy) >= config.min_move_y) {
+                            cancelTouch();
+                            if (dy > 0) {
+                                config.wipeDown();
+                            }
+                            else {
+                                config.wipeUp();
+                            }
+                        }
+                    }
+                }
+
+                function onTouchStart(e) {
+                    if (e.touches.length == 1) {
+                        startX = e.touches[0].pageX;
+                        startY = e.touches[0].pageY;
+                        isMoving = true;
+                        this.addEventListener('touchmove', onTouchMove, false);
+                    }
+                }
+                if ('ontouchstart' in document.documentElement) {
+                    this.addEventListener('touchstart', onTouchStart, false);
+                }
+            });
+
+            return this;
+        };
+
+    })(jQuery);
+
+    $(function () {
+        $("#imagegallery").touchwipe({
+            wipeLeft: function () { picture_carousel('prev'); },
+            wipeRight: function () { picture_carousel('next'); },
+            wipeUp: function () { PictureWidth_AddSub('sub'); },//圖片縮小 
+            wipeDown: function () { PictureWidth_AddSub('add'); },//圖片放大 
+            min_move_x: 20,
+            min_move_y: 20,
+            preventDefaultEvents: true
+        });
+
+        document.getElementById("ph_prev").onclick = function () { picture_carousel('prev'); }
+        document.getElementById("ph_next").onclick = function () { picture_carousel('next'); }
+        document.getElementById("imagegallery").onclick = function () { picture_carousel("next"); }				//載入 幻燈片 頁數狀態
+        re_PageNum();
+        //載入 幻燈片 第一張圖片
+        picture_carousel('prev');
+
+        pof_x = 0;
+        document.getElementById("phCG_OnOff").onclick = function () {
+            pof_x++;
+            if (pof_x % 2 == 0) {
+                document.getElementById('phCG_OnOff').innerHTML = '<font size="5">幻燈片模式&nbsp; <u><b><font color="#FF0000">關閉</font></b></u></font>';
+                document.getElementById('phCG_OnOff_TWO').innerHTML = "圖片放大縮小<input type='button' name='widthchangI' value='縮小'  onclick='widthchangBB(400);'>" + "&nbsp;&nbsp;&nbsp;<input type='button' name='widthchangJ' value='放大' onclick='widthchangBB(1000);'>";
+
+                document.getElementById("ph_PageNum").style.display = "block";
+                document.getElementById("wrap").style.display = "block";
+                document.getElementById("ph_explain").style.display = "block";
+            } else {
+                document.getElementById('phCG_OnOff').innerHTML = '<font size="5">幻燈片模式&nbsp; <u><b><font color="#0000FF">開啟</font></b></u></font>';
+                document.getElementById('phCG_OnOff_TWO').innerHTML = '';
+
+                document.getElementById("ph_PageNum").style.display = "none";
+                document.getElementById("wrap").style.display = "none";
+                document.getElementById("ph_explain").style.display = "none";
+            }
+        }
+        document.getElementById("phCG_OnOff").onclick();
+
+    })
+
+    function PictureWidth_AddSub(pca_condition) {
+        if (pca_condition == 'add') widthtemp = widthtemp + 50;
+        else widthtemp = widthtemp - 50;
+        picture_carousel();
+    }
+
+    ph_i = 1;
+    //幻燈片 頁數狀態
+    function re_PageNum() {
+        document.getElementById('ph_PageNum').innerHTML = '<font size="7">' + ph_i + ' / ' + (Large_cgurl.length - 1) + '</font>';
+    }
+
+    function picture_carousel(pcc_condition) {
+
+        document.getElementById("wrap").style.width = widthtemp + 100;
+        document.getElementById("ph_main_cg").style.width = widthtemp;
+
+        if (pcc_condition == 'next') {
+            if (ph_i < (Large_cgurl.length - 1)) {
+                ph_i++;
+                if ((ph_i % 10 == 8) && (ph_i + 1) < (Large_cgurl.length - 1)) show_input((Math.ceil(ph_i / 10) + 1), 'ph_prev_or_ph_next');
+            }
+        } else if (pcc_condition == 'prev') {
+            if (ph_i > 1) {
+                ph_i--;
+                if ((ph_i % 10 == 2) && ph_i >= 12) show_input((Math.ceil(ph_i / 10) - 1), 'ph_prev_or_ph_next');
+            }
+        }
+
+        if (widthtemp == 799) showtemp = "<img class='lazy' border='0' src='" + Large_cgurl[ph_i] + "' width='799' ><br>";
+        else showtemp = "<img class='lazy' border='0' src='" + Large_cgurl[ph_i] + "' width='" + widthtemp + "' ><br>";
+
+        document.getElementById('imagegallery').innerHTML = showtemp;
+        re_PageNum();
+    }
+
+
+
+
+</script>
