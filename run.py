@@ -64,7 +64,10 @@ def createImgList(content_path):
         if os.path.splitext(_dir)[1].lower() in IMG_SUFFIX:
             imgs.append(_dir)
     try:
-        imgs.sort(key=lambda x: int(x[:-4]))
+        if imgs[int(len(imgs)/2)][:-4].isdigit(): 
+            imgs.sort(key=lambda x: int(x[:-4]))    
+        else:
+            imgs.sort()
     except:
         pass
     return imgs
@@ -163,8 +166,8 @@ if __name__ == '__main__':
     gci(CONTENTS_PATH)
     for contentPath in contentPaths:
         BASE_TEMP_DEEPTH = contentPath.count('/', 0)
-        if checkFileExist(contentPath + CONTENT_HTML):
-            continue
+        # if checkFileExist(contentPath + CONTENT_HTML):
+        #     continue
         data = createContentHtml(contentPath)
         if data is not None:
             print("新增： ", data)
