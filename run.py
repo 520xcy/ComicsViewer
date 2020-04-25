@@ -13,7 +13,8 @@ CONTENTS_PATH = "contents"
 
 DATA_PATH = "data/data"
 INDEX_HTML = "/index.html"
-CONTENT_HTML = "/29f459a44fee58c7.html"
+# CONTENT_HTML = "/29f459a44fee58c7.html"
+CONTENT_HTML = "/detail.html"
 
 TEMPLETE_HTML = "/h/new_templete.html"
 INDEX_TEMPLETE_HTML = "/h/index_templete.html"
@@ -113,6 +114,10 @@ def getData():
     data = []
     with shelve.open(DATA_PATH) as read:
         keys = list(read.keys())
+        try:
+            keys.sort()
+        except:
+            pass
         for key in keys:
             data.append(read[key])
     return data
