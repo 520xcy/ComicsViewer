@@ -166,8 +166,8 @@ if __name__ == '__main__':
     gci(CONTENTS_PATH)
     for contentPath in contentPaths:
         BASE_TEMP_DEEPTH = contentPath.count('/', 0)
-        # if checkFileExist(contentPath + CONTENT_HTML):
-        #     continue
+        if checkFileExist(contentPath + CONTENT_HTML):
+            continue
         data = createContentHtml(contentPath)
         if data is not None:
             print("新增： ", data)
