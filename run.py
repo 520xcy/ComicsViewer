@@ -64,11 +64,10 @@ def createImgList(content_path):
         if os.path.splitext(_dir)[1].lower() in IMG_SUFFIX:
             imgs.append(_dir)
     try:
-        if imgs[int(len(imgs)/2)][:-4].isdigit(): 
-            imgs.sort(key=lambda x: int(x[:-4]))    
-        else:
-            imgs.sort()
+        # {True: imgs.sort(key=lambda x: int(x[:-4])), False: imgs.sort()}[imgs[3][:-4].isdigit()]
+        imgs.sort(key=lambda x: x[:-4])
     except:
+        imgs.sort()
         pass
     return imgs
 
