@@ -4,6 +4,7 @@
 import os
 import time
 import shelve
+import urllib.parse
 # 默认templete模板生成目录与h资源目录相差2层
 BASE_TEMP_DEEPTH = 1
 
@@ -24,10 +25,10 @@ IMG_SUFFIX = [".jpg", ".png", ".jpeg", ".gif"]
 
 def createComicItems(title, content_path, first_img, count):
     templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div><p class="date">{date}</p></a></li><!--{comic_contents}-->'
-    templete = templete.replace(r"{url}", content_path + CONTENT_HTML)
+    templete = templete.replace(r"{url}", urllib.parse.quote(content_path) + CONTENT_HTML)
     templete = templete.replace(r"{title}", title)
     templete = templete.replace(r"{count}", str(count))
-    templete = templete.replace(r"{first_img}", content_path+"/"+first_img)
+    templete = templete.replace(r"{first_img}", urllib.parse.quote(content_path)+"/"+first_img)
     date = time.localtime(os.stat(content_path).st_ctime)
     templete = templete.replace(
         r"{date}", ("%d-%d-%d" % (date.tm_year, date.tm_mon, date.tm_mday)))
