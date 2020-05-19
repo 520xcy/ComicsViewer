@@ -95,7 +95,7 @@ body {
 	color: #111;
 	background: url(../img/1.png) center top;
 	line-height: 1;
-	min-width: 1100px
+	/* min-width: 1100px */
 }
 
 a {
@@ -350,7 +350,7 @@ header nav ul li a:hover {
 }
 
 #contents {
-	width: 1000px;
+	width: 100%;
 	margin: 0 auto
 }
 
@@ -2377,7 +2377,7 @@ footer {
 
 footer .box {
 	overflow: hidden;
-	width: 1000px;
+	/* width: 1000px; */
 	line-height: 20px;
 	margin: 0 auto;
 	padding: 20px 0;
@@ -3529,4 +3529,16 @@ section>h2 span {
 
 section h2 span a {
 	color: #111
+}
+
+@media screen and (max-width: 400px){
+	.file_list>li {
+		width: 98%;
+	}
+}
+
+@media screen and (max-width: 800px){
+	.file_list>li {
+		width: 48%;
+	}
 }

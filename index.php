@@ -1,3 +1,8 @@
+<?php
+require_once './config.inc.php';
+session_start();
+$_SESSION['_token'] = pswmd5(date('Y-m-d', time()).session_id());
+?>
 <!doctype html>
 
 <head>
@@ -82,6 +87,7 @@
 			height: 30px;
 			transition: .1s background linear;
 		}
+
 		.file_list li .date {
 			position: relative;
 			padding: 1px 0 0;
@@ -97,31 +103,30 @@
 	<div id="container">
 		<div id="contents">
 			<section class="leftbox l1">
-				
+
 				<ul class="file_list">
-					<!--{comic_contents}-->
-					<!--
-<li>
-	<a href="{url}" target="_blank" title="{title}">
-		<h2>{title}</h2>
-		<div class="image">
-			<img class="lazy" src="{first_img}">
-			<table class="data">
-				<tr>
-					<th scope="row">枚数</th>
-					<td>{count}枚</td>
-				</tr>
-				<tr>
-					<td class="tag" colspan="2">
-						<span>{title}</span> 
-					</td>
-				</tr>
-			</table>
-		</div>
-		<p class="date">{date}</p>
-	</a>
-</li>
--->
+					<?php
+					$m = new Model();
+					$result = $m->fetchAll('files', '*', '', 'created_at desc');
+					foreach ($result as $row) {
+					?>
+						<li><a href="<?php echo $row['path'] ?>/detail.php" target="_blank" title="1">
+								<h2><?php echo $row['title'] ?></h2>
+								<div class="image"><img class="lazy" src="h/img/loading.gif" data-original="<?php echo $row['path'] . '/' . $row['pic'] ?>">
+									<table class="data">
+										<tr>
+											<th scope="row">枚数</th>
+											<td><?php echo $row['count'] ?>枚</td>
+										</tr>
+										<tr>
+											<td class="tag" colspan="2"><span>1</span></td>
+										</tr>
+									</table>
+								</div>
+								<p class="date"><?php echo $row['created_at'] ?>&nbsp;<a href="javascript:;" onclick="del(<?php echo $row['path'] ?>)">删</a></p>
+							</a>
+						</li>
+					<?php } ?>
 				</ul>
 			</section>
 		</div>
@@ -137,10 +142,39 @@
 </body>
 <script type="text/javascript" charset="utf-8">
 	$(function() {
-		$("img").lazyload({ 
-		placeholder : "h/img/loading.gif",
-			   effect: "fadeIn"
-		 });  
+		$("img").lazyload({
+			placeholder: "h/img/loading.gif",
+			effect: "fadeIn"
+		});
 	});
 </script>
+<script>
+	function del(path){
+		var dlform = document.createElement('form');
+		dlform.style = "display:none;";
+		dlform.method = 'post';
+		dlform.action = 'fun.php';
+		dlform.target = '_blank';
+		var action = document.createElement('input');
+		action.type = 'hidden';
+		action.name = 'action';
+		action.value = 'delete';
+		dlform.appendChild(action);
+		var del_id = document.createElement('input');
+		del_id.type = 'hidden';
+		del_id.name = 'id';
+		del_id.value = path;
+		dlform.appendChild(del_id);
+		var token = document.createElement('input');
+		token.type = 'hidden';
+		token.name = '_token';
+		token.value = '<?php echo $_SESSION['_token'] ?>';
+		dlform.appendChild(token);
+		document.body.appendChild(dlform);
+		dlform.submit();
+		document.body.removeChild(dlform);
+	}
+
+</script>
+
 </html>

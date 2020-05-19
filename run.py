@@ -5,6 +5,10 @@ import os
 import time
 import shelve
 import urllib.parse
+import json
+
+from data import mysqlite as sqlite
+
 # 默认templete模板生成目录与h资源目录相差2层
 BASE_TEMP_DEEPTH = 1
 
@@ -17,16 +21,24 @@ INDEX_HTML = "/index.html"
 # CONTENT_HTML = "/29f459a44fee58c7.html"
 CONTENT_HTML = "/detail.html"
 
-TEMPLETE_HTML = "/h/new_templete.html"
+TEMPLETE_HTML = "/h/detail_templete.html"
 INDEX_TEMPLETE_HTML = "/h/index_templete.html"
 
 IMG_SUFFIX = [".jpg", ".png", ".jpeg", ".gif"]
 
+DB = sqlite.mysql({
+    'dbtype': 'sqllite',
+    'db': DATA_PATH,
+    'prefix': '',
+    'charset': 'utf8'
+})
+
 
 def createComicItems(title, content_path, first_img, count):
     templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div><p class="date">{date}</p></a></li><!--{comic_contents}-->'
-    templete = templete.replace(r"{url}", urllib.parse.quote(content_path) + CONTENT_HTML)
-    templete = templete.replace(r"{title}", title)
+    templete = templete.replace(
+        r"{url}", urllib.parse.quote(content_path) + CONTENT_HTML)
+    templete = templete.replace(r"{title}", str(title))
     templete = templete.replace(r"{count}", str(count))
     templete = templete.replace(r"{first_img}", urllib.parse.quote(content_path)+"/"+first_img)
     date = time.localtime(os.stat(content_path).st_ctime)
@@ -100,30 +112,32 @@ def createContentHtml(contentPath):
 
 
 def pushData(data):
-    with shelve.open(DATA_PATH) as write:
-        write[data[0]] = data
+    obj = {
+        'title': data[0],
+        'path': data[1],
+        'pic': data[2],
+        'count': data[3],
+        'created_at':time.strftime("%Y-%m-%d", time.localtime())
+    }
+    count = DB.table('files').where({'path':data[1]}).count()
+    if count:
+        DB.table('files').where({'path':data[1]}).save(obj)
+        return
+    DB.table('files').add(obj)
+    DB.table('files').setinc('id')
 
 
 def checkData():
-    with shelve.open(DATA_PATH) as read:
-        keys = list(read.keys())
-        for key in keys:
-            if not checkFileExist(read[key][1]+CONTENT_HTML):
-                print("移除： ", read[key])
-                del(read[key])
+    datas = getData()
+    for data in datas:
+        if not checkFileExist(data['path']+CONTENT_HTML):
+            print("移除： ", data['path'])
+            DB.table('files').where('id='+str(data['id'])).delete()
 
 
 def getData():
-    data = []
-    with shelve.open(DATA_PATH) as read:
-        keys = list(read.keys())
-        try:
-            keys.sort()
-        except:
-            pass
-        for key in keys:
-            data.append(read[key])
-    return data
+    datalist = DB.table('files').order('title').select()
+    return datalist
 
 
 def createIndexHtml():
@@ -131,7 +145,7 @@ def createIndexHtml():
     datas = getData()
     indexStr = getTempleteHtml(INDEX_TEMPLETE_HTML)
     for data in datas:
-        _s = createComicItems(data[0], data[1], data[2], data[3])
+        _s = createComicItems(data['title'], data['path'], data['pic'], data['count'])
         indexStr = indexStr.replace(r"<!--{comic_contents}-->", _s)
     output2Html(indexStr, BASE_PATH + INDEX_HTML)
 
@@ -162,6 +176,7 @@ def gci(filepath):
 
 
 if __name__ == '__main__':
+    DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key,title text, path text,pic text, count int, created_at text)')
     contentPaths = []
     gci(CONTENTS_PATH)
     for contentPath in contentPaths:

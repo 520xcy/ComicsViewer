@@ -1,0 +1,7 @@
+/.idea/
+*/__pycache__
+/data/db.db
+/data/data
+*.DS_Store
+contents
+index.html
