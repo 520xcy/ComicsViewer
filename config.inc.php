@@ -1,4 +1,7 @@
 <?php
+ini_set("display_errors", "On");
+error_reporting(E_ALL);
+
 header('Content-Type:text/html;Charset=utf-8');
 define('ROOT_PATH', dirname(__FILE__)); // 网站根目录
 define('DB_DSN', 'sqlite:'.ROOT_PATH.'/data/db.db');
@@ -8,3 +11,5 @@ define('DB_PWD', '8444973');
 function __autoload($className) {
 	require_once ROOT_PATH . '/class/'. ucfirst($className) .'.class.php';
 }
+
+require_once ROOT_PATH.'/fun.php';

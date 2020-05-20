@@ -88,6 +88,7 @@ $_SESSION['_token'] = $_token;
 			height: 30px;
 			transition: .1s background linear;
 		}
+
 		.file_list li .date {
 			position: relative;
 			padding: 1px 0 0;
@@ -103,9 +104,31 @@ $_SESSION['_token'] = $_token;
 	<div id="container">
 		<div id="contents">
 			<section class="leftbox l1">
-				
+
 				<ul class="file_list">
-					<!--{comic_contents}-->
+					<?php
+					$m = new Model();
+					$result = $m->fetchAll('files', '*', '', 'title');
+					foreach ($result as $row) {
+					?>
+						<li><a href="<?php echo $row['path'] ?>/detail.html" target="_blank" title="1">
+								<h2><?php echo $row['title'] ?></h2>
+								<div class="image"><img class="lazy" src="h/img/loading.gif" data-original="<?php echo $row['path'] . '/' . $row['pic'] ?>">
+									<table class="data">
+										<tr>
+											<th scope="row">枚数</th>
+											<td><?php echo $row['count'] ?>枚</td>
+										</tr>
+										<tr>
+											<td class="tag" colspan="2"><span>1</span></td>
+										</tr>
+									</table>
+								</div>
+							</a>
+							<p class="date"><?php echo $row['created_at'] ?>&nbsp;<a href="javascript:if(confirm('确实要删除吗?'))del('<?php echo $row['id'] ?>')">删</a></p>
+
+						</li>
+					<?php } ?>
 				</ul>
 			</section>
 		</div>
@@ -121,10 +144,10 @@ $_SESSION['_token'] = $_token;
 </body>
 <script type="text/javascript" charset="utf-8">
 	$(function() {
-		$("img").lazyload({ 
-		placeholder : "h/img/loading.gif",
-			   effect: "fadeIn"
-		 });  
+		$("img").lazyload({
+			placeholder: "h/img/loading.gif",
+			effect: "fadeIn"
+		});
 	});
 </script>
 <script>
@@ -155,4 +178,5 @@ $_SESSION['_token'] = $_token;
 		document.body.removeChild(dlform);
 	}
 </script>
+
 </html>

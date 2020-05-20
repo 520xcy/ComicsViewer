@@ -23,11 +23,4 @@ function pswmd5($pass){//MD5算法
 }
 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
-    $_token=inject_check($_POST['_token']);
-    $id=inject_check($_POST['id']);
-    if ($_SESSION['_token'] === $_token){
-        echo $id;
-    }
-    
-}    
+   

@@ -7,6 +7,8 @@ import shelve
 import urllib.parse
 import json
 
+from PIL import Image
+
 from data import mysqlite as sqlite
 
 # 默认templete模板生成目录与h资源目录相差2层
@@ -17,7 +19,7 @@ BASE_PATH = os.getcwd()
 CONTENTS_PATH = "contents"
 
 DATA_PATH = "data/data"
-INDEX_HTML = "/index.html"
+INDEX_HTML = "/index.php"
 # CONTENT_HTML = "/29f459a44fee58c7.html"
 CONTENT_HTML = "/detail.html"
 
@@ -33,13 +35,69 @@ DB = sqlite.mysql({
     'charset': 'utf8'
 })
 
+'''
+:图片处理部分
+'''
+def get_size(file):
+    # 获取文件大小:KB
+    size = os.path.getsize(file)
+    return size / 1024
 
-def createComicItems(title, content_path, first_img, count):
-    templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div><p class="date">{date}</p></a></li><!--{comic_contents}-->'
+def get_outfile(infile, outfile):
+    if outfile:
+        return outfile
+    dir, suffix = os.path.splitext(infile)
+    outfile = '{}-out{}'.format(dir, suffix)
+    return outfile
+
+def compress_image(infile, outfile='', mb=150, step=10, quality=80):
+    """不改变图片尺寸压缩到指定大小
+    :param infile: 压缩源文件
+    :param outfile: 压缩文件保存地址
+    :param mb: 压缩目标，KB
+    :param step: 每次调整的压缩比率
+    :param quality: 初始压缩比率
+    :return: 压缩文件地址，压缩文件大小
+    """
+    o_size = get_size(infile)
+    if o_size <= mb:
+        return infile
+    outfile = get_outfile(infile, outfile)
+    while o_size > mb:
+        im = Image.open(infile)
+        im.save(outfile, quality=quality)
+        if quality - step < 0:
+            break
+        quality -= step
+        o_size = get_size(outfile)
+    return outfile, get_size(outfile)
+
+def resize_image(infile, outfile='', x_s=800):
+    """修改图片尺寸
+    :param infile: 图片源文件
+    :param outfile: 重设尺寸文件保存地址
+    :param x_s: 设置的宽度
+    :return:
+    """
+    im = Image.open(infile)
+    x, y = im.size
+    y_s = int(y * x_s / x)
+    out = im.resize((x_s, y_s), Image.ANTIALIAS)
+    outfile = get_outfile(infile, outfile)
+    out.save(outfile)
+
+
+
+'''
+:文件处理部分
+'''
+def createComicItems(title, content_path, first_img, count, id):
+    templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div></a><p class="date">{date}</p>&nbsp;<a href="javascript:if(confirm('+'\'确实要删除吗?\''+'))del('+'\'{id}\''+')">删</a></li><!--{comic_contents}-->'
     templete = templete.replace(
         r"{url}", urllib.parse.quote(content_path) + CONTENT_HTML)
     templete = templete.replace(r"{title}", str(title))
     templete = templete.replace(r"{count}", str(count))
+    templete = templete.replace(r"{id}", str(id))
     templete = templete.replace(r"{first_img}", urllib.parse.quote(content_path)+"/"+first_img)
     date = time.localtime(os.stat(content_path).st_ctime)
     templete = templete.replace(
@@ -112,14 +170,17 @@ def createContentHtml(contentPath):
 
 
 def pushData(data):
+    dir, suffix = os.path.splitext(data[2])
     obj = {
         'title': data[0],
         'path': data[1],
-        'pic': data[2],
+        'pic': '{}-out{}'.format(dir, suffix),
         'count': data[3],
         'created_at':time.strftime("%Y-%m-%d", time.localtime())
     }
     count = DB.table('files').where({'path':data[1]}).count()
+    compress_image(data[1]+'/'+data[2])
+    resize_image(data[1]+'/'+data[2])
     if count:
         DB.table('files').where({'path':data[1]}).save(obj)
         return
@@ -145,7 +206,7 @@ def createIndexHtml():
     datas = getData()
     indexStr = getTempleteHtml(INDEX_TEMPLETE_HTML)
     for data in datas:
-        _s = createComicItems(data['title'], data['path'], data['pic'], data['count'])
+        _s = createComicItems(data['title'], data['path'], data['pic'], data['count'], data['id'])
         indexStr = indexStr.replace(r"<!--{comic_contents}-->", _s)
     output2Html(indexStr, BASE_PATH + INDEX_HTML)
 

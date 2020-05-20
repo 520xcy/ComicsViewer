@@ -297,6 +297,7 @@ class Model {
      * @param string $condition 条件
      * @param string or array $fields 返回的字段，默认是*
      * @return PDOStatement
+     * @return array 需->fetch(PDO::FETCH_ASSOC)
      */
     public function getOne($tName, $condition, $fields="*") {
     	try {
@@ -326,7 +327,7 @@ class Model {
     		$condition = $condition=='' ? '' : " WHERE ". $condition ;
     		$order = $order=='' ? '' : " ORDER BY ". $order;
     		$limit = $limit=='' ? '' : " LIMIT ". $limit;
-    		$pdo = Db::getDB();
+            $pdo = Db::getDB();
     		$re = $pdo->query("SELECT {$fields} FROM {$tName} {$condition} {$order} {$limit}");
     		return $re;
     	} catch (PDOException $e) {

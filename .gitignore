@@ -4,4 +4,5 @@
 /data/data
 *.DS_Store
 contents
-index.html
+index.php
+._*
