@@ -132,6 +132,8 @@ def createOptions(imgData):
 def createImgList(content_path):
     imgs = []
     for _dir in os.listdir(content_path):
+        if(os.path.splitext(_dir)[0].startswith('.')):
+            continue
         if os.path.splitext(_dir)[1].lower() in IMG_SUFFIX:
             imgs.append(_dir)
     try:
@@ -178,9 +180,9 @@ def pushData(data):
         'count': data[3],
         'created_at':time.strftime("%Y-%m-%d", time.localtime())
     }
-    count = DB.table('files').where({'path':data[1]}).count()
     compress_image(data[1]+'/'+data[2])
     resize_image(data[1]+'/'+data[2])
+    count = DB.table('files').where({'path':data[1]}).count()
     if count:
         DB.table('files').where({'path':data[1]}).save(obj)
         return
