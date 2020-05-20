@@ -18,7 +18,7 @@ BASE_PATH = os.getcwd()
 # CONTENTS_PATH = BASE_PATH + "/contents"
 CONTENTS_PATH = "contents"
 
-DATA_PATH = "data/data"
+DATA_PATH = "data/xiang"
 INDEX_HTML = "/index.php"
 # CONTENT_HTML = "/29f459a44fee58c7.html"
 CONTENT_HTML = "/detail.html"

@@ -2,6 +2,7 @@
 */__pycache__
 /data/db.db
 /data/data
+/data/xiang
 *.DS_Store
 contents
 index.php
