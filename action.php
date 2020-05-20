@@ -33,8 +33,16 @@ function removeDir($dirName)
     }
     
 }
-
-
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_token = inject_check($_POST['_token']);
     $id = inject_check($_POST['id']);
@@ -42,22 +50,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_SESSION['_token'] == $_token) {
         switch ($action) {
             case 'remove':
-                $m = new Model();
-                $result = $m->getOne('files', 'id=' . $id);
-                $data = $result->fetch(PDO::FETCH_ASSOC);
-                if($data){
-                    try {
-                        removeDir($data['path']);
-                        $m->del('files', 'id=' . $id);
-                        echo "<script>alert('删除成功');window.opener=null;window.open('','_self');window.close();</script>";
-                    } catch (\Exception $e) {
-                        echo $e->getMessage();
+                try {
+                    $m = new Model();
+                    $res = $m->getOne('files', 'id=' . $id);
+                    foreach($res as $data){}
+                    if(!empty($data)){
+                            removeDir($data['path']);
+                            $res = $m->del('files', 'id='. $id);
+                            echo "<script>alert('删除'.$res.'条记录成功');window.opener=null;window.open('','_self');window.close();</script>";
+                        
+                    }else{
+                        echo '文件不存在';
                     }
-                }else{
-                    echo '文件不存在';
+                } catch (\Exception $e) {
+                    die($e->getMessage());
+
                 }
             break;
         }
     }
 }
 ?>
+</body>
+</html>
