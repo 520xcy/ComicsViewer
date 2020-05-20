@@ -45,15 +45,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $m = new Model();
                 $result = $m->getOne('files', 'id=' . $id);
                 $data = $result->fetch(PDO::FETCH_ASSOC);
-                try {
-                    removeDir($data['path']);
-
-                    $m->del('files', 'id=' . $id);
-                    echo "<script>alert('删除成功');window.opener=null;window.open('','_self');window.close();</script>";
-                } catch (\Exception $e) {
-                    echo $e->getMessage();
+                if($data){
+                    try {
+                        removeDir($data['path']);
+                        $m->del('files', 'id=' . $id);
+                        echo "<script>alert('删除成功');window.opener=null;window.open('','_self');window.close();</script>";
+                    } catch (\Exception $e) {
+                        echo $e->getMessage();
+                    }
+                }else{
+                    echo '文件不存在';
                 }
-
             break;
         }
     }
