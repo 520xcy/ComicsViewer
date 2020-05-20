@@ -128,31 +128,70 @@ $_SESSION['_token'] = $_token;
 	});
 </script>
 <script>
-	function del(path) {
+    var Ajax = {
+        get: function(url,fn){
+            // XMLHttpRequest对象用于在后台与服务器交换数据
+            var xhr=new XMLHttpRequest();
+            xhr.open('GET',url,false);
+            xhr.onreadystatechange=function(){
+                // readyState == 4说明请求已完成
+                if(xhr.readyState==4){
+                    if(xhr.status==200 || xhr.status==304){
+                        console.log(xhr.responseText);
+                        fn.call(xhr.responseText);
+                    }
+                }
+            }
+            xhr.send();
+        },
 
-		var dlform = document.createElement('form');
-		dlform.style = "display:none;";
-		dlform.method = 'post';
-		dlform.action = 'action.php';
-		dlform.target = '_blank';
-		var action = document.createElement('input');
-		action.type = 'hidden';
-		action.name = 'action';
-		action.value = 'remove';
-		dlform.appendChild(action);
-		var del_id = document.createElement('input');
-		del_id.type = 'hidden';
-		del_id.name = 'id';
-		del_id.value = path;
-		dlform.appendChild(del_id);
-		var token = document.createElement('input');
-		token.type = 'hidden';
-		token.name = '_token';
-		token.value = '<?php echo $_token ?>';
-		dlform.appendChild(token);
-		document.body.appendChild(dlform);
-		dlform.submit();
-		document.body.removeChild(dlform);
-	}
+        // data应为'a=a1&b=b1'这种字符串格式，在jq里如果data为对象会自动将对象转成这种字符串格式
+        post: function(url,data,fn){
+            var xhr=new XMLHttpRequest();
+            xhr.open('POST',url,false);
+            // 添加http头，发送信息至服务器时内容编码类型
+            xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+            xhr.onreadystatechange=function(){
+                if (xhr.readyState==4){
+                    if (xhr.status==200 || xhr.status==304){
+                        console.log(xhr.responseText);
+                        fn.call(xhr.responseText);
+                    }
+                }
+            }
+            xhr.send(data);
+        }
+    }
+</script>
+<script>
+    function del(path) {
+        var data = 'action=remove&id='+path+'&_token=<?php echo $_token ?>'
+        Ajax.post('action.php', data, function(){
+            alert(this);
+        })
+        // var dlform = document.createElement('form');
+        // dlform.style = "display:none;";
+        // dlform.method = 'post';
+        // dlform.action = 'action.php';
+        // dlform.target = '_blank';
+        // var action = document.createElement('input');
+        // action.type = 'hidden';
+        // action.name = 'action';
+        // action.value = 'remove';
+        // dlform.appendChild(action);
+        // var del_id = document.createElement('input');
+        // del_id.type = 'hidden';
+        // del_id.name = 'id';
+        // del_id.value = path;
+        // dlform.appendChild(del_id);
+        // var token = document.createElement('input');
+        // token.type = 'hidden';
+        // token.name = '_token';
+        // token.value = '<?php echo $_token ?>';
+        // dlform.appendChild(token);
+        // document.body.appendChild(dlform);
+        // dlform.submit();
+        // document.body.removeChild(dlform);
+    }
 </script>
 </html>
