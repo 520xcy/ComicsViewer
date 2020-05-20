@@ -172,16 +172,22 @@ def createContentHtml(contentPath):
 
 
 def pushData(data):
-    dir, suffix = os.path.splitext(data[2])
+    try:
+        compress_image(data[1]+'/'+data[2])
+        resize_image(data[1]+'/'+data[2])
+    except:
+        pass
+    else:
+        dir, suffix = os.path.splitext(data[2])
+        data[2] = '{}-out{}'.format(dir, suffix)
+
     obj = {
         'title': data[0],
         'path': data[1],
-        'pic': '{}-out{}'.format(dir, suffix),
+        'pic': data[2],
         'count': data[3],
         'created_at':time.strftime("%Y-%m-%d", time.localtime())
     }
-    compress_image(data[1]+'/'+data[2])
-    resize_image(data[1]+'/'+data[2])
     count = DB.table('files').where({'path':data[1]}).count()
     if count:
         DB.table('files').where({'path':data[1]}).save(obj)
