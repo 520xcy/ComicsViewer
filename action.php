@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if(!empty($data)){
                             removeDir($data['path']);
                             $res = $m->del('files', 'id='. $id);
-                            echo "<script>alert('删除'.$res.'条记录成功');window.opener=null;window.open('','_self');window.close();</script>";
+                            echo "<script>alert('删除记录成功');window.opener=null;window.open('','_self');window.close();</script>";
                         
                     }else{
                         echo '文件不存在';
