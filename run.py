@@ -92,7 +92,7 @@ def resize_image(infile, outfile='', x_s=800):
 :文件处理部分
 '''
 def createComicItems(title, content_path, first_img, count, id):
-    templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div></a><p class="date">{date}</p>&nbsp;<a href="javascript:if(confirm('+'\'确实要删除吗?\''+'))del('+'\'{id}\''+')">删</a></li><!--{comic_contents}-->'
+    templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div></a><p class="date">{date}&nbsp;<a href="javascript:if(confirm('+'\'确实要删除吗?\''+'))del('+'\'{id}\''+')">删</a></p></li><!--{comic_contents}-->'
     templete = templete.replace(
         r"{url}", urllib.parse.quote(content_path) + CONTENT_HTML)
     templete = templete.replace(r"{title}", str(title))
