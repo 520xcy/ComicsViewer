@@ -6,10 +6,12 @@ import time
 import shelve
 import urllib.parse
 import json
-
+import sys
 from PIL import Image
 
 from data import mysqlite as sqlite
+
+ORDER_FIELD = "title"
 
 # 默认templete模板生成目录与h资源目录相差2层
 BASE_TEMP_DEEPTH = 1
@@ -91,7 +93,7 @@ def resize_image(infile, outfile='', x_s=800):
 '''
 :文件处理部分
 '''
-def createComicItems(title, content_path, first_img, count, id):
+def createComicItems(title, content_path, first_img, count, id, created_at):
     templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div></a><p class="date">{date}&nbsp;<a href="javascript:if(confirm('+'\'确实要删除吗?\''+'))del('+'\'{id}\''+')">删</a></p></li><!--{comic_contents}-->'
     templete = templete.replace(
         r"{url}", urllib.parse.quote(content_path) + CONTENT_HTML)
@@ -99,9 +101,10 @@ def createComicItems(title, content_path, first_img, count, id):
     templete = templete.replace(r"{count}", str(count))
     templete = templete.replace(r"{id}", str(id))
     templete = templete.replace(r"{first_img}", urllib.parse.quote(content_path)+"/"+first_img)
-    date = time.localtime(os.stat(content_path).st_ctime)
-    templete = templete.replace(
-        r"{date}", ("%d-%d-%d" % (date.tm_year, date.tm_mon, date.tm_mday)))
+    # date = time.localtime(os.stat(content_path).st_ctime)
+    # templete = templete.replace(
+    #     r"{date}", ("%d-%d-%d" % (date.tm_year, date.tm_mon, date.tm_mday)))
+    templete = templete.replace(r"{date}", str(created_at))
     return templete
 
 
@@ -205,7 +208,7 @@ def checkData():
 
 
 def getData():
-    datalist = DB.table('files').order('title').select()
+    datalist = DB.table('files').order(ORDER_FIELD).select()
     return datalist
 
 
@@ -214,7 +217,7 @@ def createIndexHtml():
     datas = getData()
     indexStr = getTempleteHtml(INDEX_TEMPLETE_HTML)
     for data in datas:
-        _s = createComicItems(data['title'], data['path'], data['pic'], data['count'], data['id'])
+        _s = createComicItems(data['title'], data['path'], data['pic'], data['count'], data['id'], data['created_at'])
         indexStr = indexStr.replace(r"<!--{comic_contents}-->", _s)
     output2Html(indexStr, BASE_PATH + INDEX_HTML)
 
@@ -245,6 +248,8 @@ def gci(filepath):
 
 
 if __name__ == '__main__':
+    if len(sys.argv)>1:
+        if sys.argv[1] == 'date':ORDER_FIELD = 'created_at'
     DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key,title text, path text,pic text, count int, created_at text)')
     contentPaths = []
     gci(CONTENTS_PATH)

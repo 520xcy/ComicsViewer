@@ -22,6 +22,7 @@ ComicsViewer1.0.0-SNAPSHOT
 
 ### Step2
 当前目录运行```python run.py```或是Windows用户双击run.bat
+```python run.py date``` 生成首页目录按添加日期排序，默认按文件夹名排序
 
 ### Step3
 indexphp.php为动态生成目录页面，性能有限
