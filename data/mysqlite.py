@@ -113,9 +113,10 @@
 # print(datalist)
 # db.close()
 
+SQLITE3_PRAGMA_synchronous_off = True
+
 import pymysql
 import sqlite3
-import os
 
 class mysql(object):
     def __init__(self, arg):
@@ -164,6 +165,7 @@ class mysql(object):
         if self.con == None:
             self.con = sqlite3.connect(arg['db'])
             self.con.row_factory = self.__dict_factory
+            if SQLITE3_PRAGMA_synchronous_off: self.con.execute("PRAGMA synchronous = OFF")
         self.cur = self.con.cursor()
     def __conn(self, config):
         self.prefix = config['prefix']
