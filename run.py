@@ -196,7 +196,7 @@ def pushData(data):
         DB.table('files').where({'path':data[1]}).save(obj)
         return
     DB.table('files').add(obj)
-    DB.table('files').setinc('id')
+    
 
 
 def checkData():
@@ -250,7 +250,7 @@ def gci(filepath):
 if __name__ == '__main__':
     if len(sys.argv)>1:
         if sys.argv[1] == 'date':ORDER_FIELD = 'created_at'
-    DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key,title text, path text,pic text, count int, created_at text)')
+    DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key AUTOINCREMENT,title text, path text,pic text, count int, created_at text)')
     contentPaths = []
     gci(CONTENTS_PATH)
     for contentPath in contentPaths:
@@ -261,4 +261,5 @@ if __name__ == '__main__':
         if data is not None:
             print("新增： ", data)
             pushData(data)
+    # DB.table('files').setinc('id')
     createIndexHtml()
