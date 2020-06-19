@@ -5,5 +5,5 @@
 /data/xiang
 *.DS_Store
 contents
-index.php
+indexstatic.php
 ._*
