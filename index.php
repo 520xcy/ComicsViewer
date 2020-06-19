@@ -190,7 +190,7 @@ $_SESSION['_token'] = $_token;
         }
     </script>
     <script>
-        $(document).on('click','del',function(event){
+        $(document).on('click','.del',function(event){
             if(confirm('确实要删除吗?')){
                 let that = $(this);
                 let path = that.data('id');
