@@ -7,6 +7,7 @@ import shelve
 import urllib.parse
 import json
 import sys
+import copy
 from PIL import Image
 
 from data import mysqlite as sqlite
@@ -202,7 +203,7 @@ def pushData(data):
 def checkData():
     datas = getData()
     for data in datas:
-        if not checkFileExist(data['path']+CONTENT_HTML):
+        if data['path'] not in allPaths:
             print("移除： ", data['path'])
             DB.table('files').where('id='+str(data['id'])).delete()
 
@@ -245,6 +246,8 @@ def gci(filepath):
         if os.path.isdir(fi_d):
             contentPaths.append(fi_d)
             gci(fi_d)
+        if '/'+fi == CONTENT_HTML:
+            hasDetail.append(filepath)
 
 
 if __name__ == '__main__':
@@ -252,14 +255,18 @@ if __name__ == '__main__':
         if sys.argv[1] == 'date':ORDER_FIELD = 'created_at'
     DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key AUTOINCREMENT,title text, path text,pic text, count int, created_at text)')
     contentPaths = []
+    hasDetail = []
     gci(CONTENTS_PATH)
+    allPaths = copy.deepcopy(contentPaths)
+    for path in hasDetail:
+        contentPaths.remove(path)
     for contentPath in contentPaths:
         BASE_TEMP_DEEPTH = contentPath.count('/', 0)
-        if checkFileExist(contentPath + CONTENT_HTML):
-            continue
         data = createContentHtml(contentPath)
         if data is not None:
             print("新增： ", data)
             pushData(data)
+        else:
+            allPaths.remove(contentPath)
     # DB.table('files').setinc('id')
     createIndexHtml()
