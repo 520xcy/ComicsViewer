@@ -171,15 +171,18 @@ def createContentHtml(contentPath):
         htmlStr = htmlStr.replace(r"{next_img}", imgData[1])
     except IndexError:
         htmlStr = htmlStr.replace(r"{next_img}", imgData[0])
+    print('生成详情页...')
     output2Html(htmlStr, contentPath + CONTENT_HTML)
     return [title, contentPath, imgData[0], count]
 
 
 def pushData(data):
     try:
+        print('生成封面缩略图...')
         compress_image(data[1]+'/'+data[2])
         resize_image(data[1]+'/'+data[2])
     except:
+        print('生成封面缩略图失败')
         pass
     else:
         dir, suffix = os.path.splitext(data[2])
@@ -201,25 +204,29 @@ def pushData(data):
 
 
 def checkData():
+    print('开始检查数据库中无效目录...')
     datas = getData()
     for data in datas:
         if data['path'] not in allPaths:
             print("移除： ", data['path'])
             DB.table('files').where('id='+str(data['id'])).delete()
+            datas.remove(data['path'])
+    return datas
 
 
 def getData():
+    print('读取数据库...')
     datalist = DB.table('files').order(ORDER_FIELD).select()
     return datalist
 
 
 def createIndexHtml():
-    checkData()
-    datas = getData()
+    datas = checkData()
     indexStr = getTempleteHtml(INDEX_TEMPLETE_HTML)
     for data in datas:
         _s = createComicItems(data['title'], data['path'], data['pic'], data['count'], data['id'], data['created_at'])
         indexStr = indexStr.replace(r"<!--{comic_contents}-->", _s)
+    print('开始生成主页...')
     output2Html(indexStr, BASE_PATH + INDEX_HTML)
 
 
@@ -256,10 +263,13 @@ if __name__ == '__main__':
     DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key AUTOINCREMENT,title text, path text,pic text, count int, created_at text)')
     contentPaths = []
     hasDetail = []
+    print('开始遍历文件夹...')
     gci(CONTENTS_PATH)
     allPaths = copy.deepcopy(contentPaths)
+    print('开始排除含已生成目录...')
     for path in hasDetail:
         contentPaths.remove(path)
+    print('开始生成目录...')
     for contentPath in contentPaths:
         BASE_TEMP_DEEPTH = contentPath.count('/', 0)
         data = createContentHtml(contentPath)
@@ -269,4 +279,5 @@ if __name__ == '__main__':
         else:
             allPaths.remove(contentPath)
     # DB.table('files').setinc('id')
+
     createIndexHtml()
