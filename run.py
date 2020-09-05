@@ -26,7 +26,7 @@ INDEX_HTML = "/indexstatic.php"
 # CONTENT_HTML = "/29f459a44fee58c7.html"
 CONTENT_HTML = "/detail.html"
 
-TEMPLETE_HTML = "/h/detail_templete.html"
+TEMPLETE_HTML = "/h/new_detail_templete.html"
 INDEX_TEMPLETE_HTML = "/h/index_templete.html"
 
 IMG_SUFFIX = [".jpg", ".png", ".jpeg", ".gif"]
