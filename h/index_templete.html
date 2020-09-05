@@ -125,7 +125,9 @@ $_SESSION['_token'] = $_token;
         $(function() {
             $("img").lazyload({
                 placeholder: "h/img/loading.gif",
-                effect: "fadeIn"
+                effect: "fadeIn",
+                threshold:200,
+                failurelimit:4
             });
         });
     </script>
