@@ -38,13 +38,24 @@ DB = sqlite.mysql({
     'charset': 'utf8'
 })
 
+'''把时间戳转化为时间: 1479264792 to 2016-11-16 10:53:12'''
+
+
+def TimeStampToTime(timestamp):
+    timeStruct = time.localtime(timestamp)
+    return time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
+
+
 '''
 :图片处理部分
 '''
+
+
 def get_size(file):
     # 获取文件大小:KB
     size = os.path.getsize(file)
     return size / 1024
+
 
 def get_outfile(infile, outfile):
     if outfile:
@@ -52,6 +63,7 @@ def get_outfile(infile, outfile):
     dir, suffix = os.path.splitext(infile)
     outfile = '{}-out{}'.format(dir, suffix)
     return outfile
+
 
 def compress_image(infile, outfile='', mb=150, step=10, quality=80):
     """不改变图片尺寸压缩到指定大小
@@ -75,6 +87,7 @@ def compress_image(infile, outfile='', mb=150, step=10, quality=80):
         o_size = get_size(outfile)
     return outfile, get_size(outfile)
 
+
 def resize_image(infile, outfile='', x_s=800):
     """修改图片尺寸
     :param infile: 图片源文件
@@ -90,10 +103,11 @@ def resize_image(infile, outfile='', x_s=800):
     out.save(outfile)
 
 
-
 '''
 :文件处理部分
 '''
+
+
 def createComicItems(title, content_path, first_img, count, id, created_at):
     templete = r'<li><a href="{url}" target="_blank" title="{title}"><h2>{title}</h2><div class="image"><img class="lazy" src="h/img/loading.gif" data-original="{first_img}"><table class="data"><tr><th scope="row">枚数</th><td>{count}枚</td></tr><tr><td class="tag" colspan="2"><span>{title}</span></td></tr></table></div></a><p class="date">{date}&nbsp;<a class="del" href="javascript:;" data-id="{id}">删</a></p></li><!--{comic_contents}-->'
     templete = templete.replace(
@@ -101,7 +115,8 @@ def createComicItems(title, content_path, first_img, count, id, created_at):
     templete = templete.replace(r"{title}", str(title))
     templete = templete.replace(r"{count}", str(count))
     templete = templete.replace(r"{id}", str(id))
-    templete = templete.replace(r"{first_img}", urllib.parse.quote(content_path)+"/"+first_img)
+    templete = templete.replace(
+        r"{first_img}", urllib.parse.quote(content_path)+"/"+first_img)
     # date = time.localtime(os.stat(content_path).st_ctime)
     # templete = templete.replace(
     #     r"{date}", ("%d-%d-%d" % (date.tm_year, date.tm_mon, date.tm_mday)))
@@ -177,6 +192,7 @@ def createContentHtml(contentPath):
 
 
 def pushData(data):
+    ctime = os.path.getctime(data[1]+'/'+data[2])
     try:
         print('生成封面缩略图...')
         compress_image(data[1]+'/'+data[2])
@@ -187,20 +203,19 @@ def pushData(data):
     else:
         dir, suffix = os.path.splitext(data[2])
         data[2] = '{}-out{}'.format(dir, suffix)
-
     obj = {
         'title': data[0],
         'path': data[1],
         'pic': data[2],
         'count': data[3],
-        'created_at':time.strftime("%Y-%m-%d", time.localtime())
+        # 'created_at':time.strftime("%Y-%m-%d", time.localtime())
+        'created_at': TimeStampToTime(ctime)
     }
-    count = DB.table('files').where({'path':data[1]}).count()
+    count = DB.table('files').where({'path': data[1]}).count()
     if count:
-        DB.table('files').where({'path':data[1]}).save(obj)
+        DB.table('files').where({'path': data[1]}).save(obj)
         return
     DB.table('files').add(obj)
-    
 
 
 def checkData():
@@ -216,7 +231,7 @@ def checkData():
 
 def getData():
     print('读取数据库...')
-    datalist = DB.table('files').order(ORDER_FIELD).select()
+    datalist = DB.table('files').order(ORDER_FIELD).getarr()
     return datalist
 
 
@@ -224,7 +239,8 @@ def createIndexHtml():
     datas = checkData()
     indexStr = getTempleteHtml(INDEX_TEMPLETE_HTML)
     for data in datas:
-        _s = createComicItems(data['title'], data['path'], data['pic'], data['count'], data['id'], data['created_at'])
+        _s = createComicItems(data['title'], data['path'], data['pic'],
+                              data['count'], data['id'], data['created_at'])
         indexStr = indexStr.replace(r"<!--{comic_contents}-->", _s)
     print('开始生成主页...')
     output2Html(indexStr, BASE_PATH + INDEX_HTML)
@@ -258,8 +274,9 @@ def gci(filepath):
 
 
 if __name__ == '__main__':
-    if len(sys.argv)>1:
-        if sys.argv[1] == 'date':ORDER_FIELD = 'created_at'
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'date':
+            ORDER_FIELD = 'created_at'
     DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key AUTOINCREMENT,title text, path text,pic text, count int, created_at text)')
     contentPaths = []
     hasDetail = []

@@ -3,6 +3,8 @@ require_once './config.inc.php';
 session_start();
 $_token             = md5(crypt(date('Y-m-d H:m:s') . session_id()));
 $_SESSION['_token'] = $_token;
+$_ORDER = $_GET['order'];
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -109,7 +111,19 @@ $_SESSION['_token'] = $_token;
                 <ul class="file_list">
                     <?php
                     $m      = new Model();
-                    $result = $m->fetchAll('files', '*', '', 'title');
+                    switch ($_ORDER){
+                        case 'asc':
+                            $result = $m->fetchAll('files', '*', '', 'created_at');
+                        break;
+
+                        case 'desc':
+                            $result = $m->fetchAll('files', '*', '', 'created_at desc');
+                        break;
+
+                        default:
+                            $result = $m->fetchAll('files', '*', '', 'title');
+                    }
+
                     foreach ($result as $row) {
                     ?>
                         <li><a href="<?php echo $row['path'] ?>/detail.html" target="_blank" title="1">
@@ -152,8 +166,6 @@ $_SESSION['_token'] = $_token;
         });
     </script>
     <script>
-
-
         var Ajax = {
             get: function(url, fn) {
                 // XMLHttpRequest对象用于在后台与服务器交换数据
@@ -190,8 +202,8 @@ $_SESSION['_token'] = $_token;
         }
     </script>
     <script>
-        $(document).on('click','.del',function(event){
-            if(confirm('确实要删除吗?')){
+        $(document).on('click', '.del', function(event) {
+            if (confirm('确实要删除吗?')) {
                 let that = $(this);
                 let path = that.data('id');
                 let data = 'action=remove&id=' + path + '&_token=<?php echo $_token ?>';
