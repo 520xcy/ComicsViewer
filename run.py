@@ -225,7 +225,7 @@ def checkData():
         if data['path'] not in allPaths:
             print("移除： ", data['path'])
             DB.table('files').where('id='+str(data['id'])).delete()
-            datas.remove(data['path'])
+            datas.remove(data)
     return datas
 
 
