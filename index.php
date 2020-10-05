@@ -113,11 +113,11 @@ $_ORDER = $_GET['order'];
                     $m      = new Model();
                     switch ($_ORDER){
                         case 'asc':
-                            $result = $m->fetchAll('files', '*', '', 'created_at');
+                            $result = $m->fetchAll('files', '*', '', 'created_at asc, title asc');
                         break;
 
                         case 'desc':
-                            $result = $m->fetchAll('files', '*', '', 'created_at desc');
+                            $result = $m->fetchAll('files', '*', '', 'created_at desc, title asc');
                         break;
 
                         default:
