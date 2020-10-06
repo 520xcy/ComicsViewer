@@ -1,7 +1,8 @@
 <?php
-require_once './config.inc.php';
+// ini_set("display_errors", "On");
+require_once './php/config.inc.php';
 session_start();
-$_token = md5(crypt(date('Y-m-d H:m:s'). session_id()));
+$_token             = crypt(md5(date('Y-m-d H:m:s') . session_id()), 'xiang');
 $_SESSION['_token'] = $_token;
 ?>
 <!DOCTYPE html>

@@ -1,7 +1,8 @@
 <?php
+// ini_set("display_errors", "On");
 require_once './php/config.inc.php';
 session_start();
-$_token             = md5(crypt(date('Y-m-d H:m:s') . session_id()));
+$_token             = crypt(md5(date('Y-m-d H:m:s') . session_id()), 'xiang');
 $_SESSION['_token'] = $_token;
 $_ORDER = $_GET['order'];
 
@@ -111,14 +112,14 @@ $_ORDER = $_GET['order'];
                 <ul class="file_list">
                     <?php
                     $m      = new Model();
-                    switch ($_ORDER){
+                    switch ($_ORDER) {
                         case 'asc':
                             $result = $m->fetchAll('files', '*', '', 'created_at asc, title asc');
-                        break;
+                            break;
 
                         case 'desc':
                             $result = $m->fetchAll('files', '*', '', 'created_at desc, title asc');
-                        break;
+                            break;
 
                         default:
                             $result = $m->fetchAll('files', '*', '', 'title');
