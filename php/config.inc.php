@@ -8,7 +8,7 @@ define('DB_USER', '');
 define('DB_PWD', '');
 // 自动加载文件类
 function __autoload($className) {
-	require_once ROOT_PATH . '/class/'. ucfirst($className) .'.class.php';
+	require_once ROOT_PATH . '/php/class/'. ucfirst($className) .'.class.php';
 }
 
-require_once ROOT_PATH.'/fun.php';
+require_once ROOT_PATH.'/php/fun.php';
