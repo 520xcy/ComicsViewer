@@ -5,6 +5,9 @@ import os
 import time
 import shelve
 import urllib.parse
+from PIL import Image
+from fun import sort_filename
+
 # 默认templete模板生成目录与h资源目录相差2层
 BASE_TEMP_DEEPTH = 1
 
@@ -21,6 +24,70 @@ TEMPLETE_HTML = "/h/new_templete.html"
 INDEX_TEMPLETE_HTML = "/h/index_templete.html"
 
 IMG_SUFFIX = [".jpg", ".png", ".jpeg", ".gif"]
+
+'''把时间戳转化为时间: 1479264792 to 2016-11-16 10:53:12'''
+
+
+def TimeStampToTime(timestamp):
+    timeStruct = time.localtime(timestamp)
+    return time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
+
+
+'''
+:图片处理部分
+'''
+
+
+def get_size(file):
+    # 获取文件大小:KB
+    size = os.path.getsize(file)
+    return size / 1024
+
+
+def get_outfile(infile, outfile):
+    if outfile:
+        return outfile
+    dir, suffix = os.path.splitext(infile)
+    outfile = '{}-out{}'.format(dir, suffix)
+    return outfile
+
+
+def compress_image(infile, outfile='', mb=150, step=10, quality=80):
+    """不改变图片尺寸压缩到指定大小
+    :param infile: 压缩源文件
+    :param outfile: 压缩文件保存地址
+    :param mb: 压缩目标，KB
+    :param step: 每次调整的压缩比率
+    :param quality: 初始压缩比率
+    :return: 压缩文件地址，压缩文件大小
+    """
+    o_size = get_size(infile)
+    if o_size <= mb:
+        return infile
+    outfile = get_outfile(infile, outfile)
+    while o_size > mb:
+        im = Image.open(infile)
+        im.save(outfile, quality=quality)
+        if quality - step < 0:
+            break
+        quality -= step
+        o_size = get_size(outfile)
+    return outfile, get_size(outfile)
+
+
+def resize_image(infile, outfile='', x_s=800):
+    """修改图片尺寸
+    :param infile: 图片源文件
+    :param outfile: 重设尺寸文件保存地址
+    :param x_s: 设置的宽度
+    :return:
+    """
+    im = Image.open(infile)
+    x, y = im.size
+    y_s = int(y * x_s / x)
+    out = im.resize((x_s, y_s), Image.ANTIALIAS)
+    outfile = get_outfile(infile, outfile)
+    out.save(outfile)
 
 
 def createComicItems(title, content_path, first_img, count):
@@ -66,7 +133,8 @@ def createImgList(content_path):
             imgs.append(_dir)
     try:
         # {True: imgs.sort(key=lambda x: int(x[:-4])), False: imgs.sort()}[imgs[3][:-4].isdigit()]
-        imgs.sort(key=lambda x: x[:-4])
+        # imgs.sort(key=lambda x: x[:-4])
+        imgs = sort_filename.sort_insert_filename(imgs)
     except:
         imgs.sort()
         pass
@@ -100,6 +168,19 @@ def createContentHtml(contentPath):
 
 
 def pushData(data):
+    dir, suffix = os.path.splitext(data[2])
+    outname = '{}-out{}'.format(dir, suffix)
+    try:
+        if not os.path.isfile(data[1]+'/'+outname):
+            print('生成封面缩略图...')
+            compress_image(data[1]+'/'+data[2])
+            resize_image(data[1]+'/'+data[2])
+    except:
+        print('生成封面缩略图失败')
+        outname = data[2]
+        pass
+    else:
+        data[2] = outname
     with shelve.open(DATA_PATH) as write:
         write[data[0]] = data
 
