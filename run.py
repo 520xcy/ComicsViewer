@@ -8,9 +8,11 @@ import urllib.parse
 import json
 import sys
 import copy
+
 from PIL import Image
 
-from data import mysqlite as sqlite
+from fun import mysqlite as sqlite
+from fun import sort_filename
 
 ORDER_FIELD = "title"
 
@@ -157,7 +159,8 @@ def createImgList(content_path):
             imgs.append(_dir)
     try:
         # {True: imgs.sort(key=lambda x: int(x[:-4])), False: imgs.sort()}[imgs[3][:-4].isdigit()]
-        imgs.sort(key=lambda x: x[:-4])
+        # imgs.sort(key=lambda x: x[:-4])
+        imgs = sort_filename.sort_insert_filename(imgs)
     except:
         imgs.sort()
         pass
@@ -221,12 +224,13 @@ def pushData(data):
 def checkData():
     print('开始检查数据库中无效目录...')
     datas = getData()
+    truedatas = copy.deepcopy(datas)
     for data in datas:
         if data['path'] not in allPaths:
             print("移除： ", data['path'])
             DB.table('files').where('id='+str(data['id'])).delete()
-            datas.remove(data)
-    return datas
+            truedatas.remove(data)
+    return truedatas
 
 
 def getData():
