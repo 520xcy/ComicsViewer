@@ -196,16 +196,19 @@ def createContentHtml(contentPath):
 
 def pushData(data):
     ctime = os.path.getctime(data[1]+'/'+data[2])
+    dir, suffix = os.path.splitext(data[2])
+    outname = '{}-out{}'.format(dir, suffix)
     try:
-        print('生成封面缩略图...')
-        compress_image(data[1]+'/'+data[2])
-        resize_image(data[1]+'/'+data[2])
+        if not os.path.isfile(data[1]+'/'+outname):
+            print('生成封面缩略图...')
+            compress_image(data[1]+'/'+data[2])
+            resize_image(data[1]+'/'+data[2])
     except:
         print('生成封面缩略图失败')
+        outname = data[2]
         pass
     else:
-        dir, suffix = os.path.splitext(data[2])
-        data[2] = '{}-out{}'.format(dir, suffix)
+        data[2] = outname
     obj = {
         'title': data[0],
         'path': data[1],
