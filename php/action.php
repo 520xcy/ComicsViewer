@@ -1,8 +1,8 @@
 <?php
 require_once './config.inc.php';
 session_start();
-ini_set("display_errors", "On");
-error_reporting(E_ALL);
+// ini_set("display_errors", "On");
+// error_reporting(E_ALL);
 
 function removeDir($dirName)
 {
@@ -33,16 +33,7 @@ function removeDir($dirName)
     }
     
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-<?php
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_token = inject_check($_POST['_token']);
     $id = inject_check($_POST['id']);
@@ -57,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if(!empty($data)){
                             removeDir($data['path']);
                             $res = $m->del('files', 'id='. $id);
-                            echo "<script>alert('删除记录成功');window.opener=null;window.open('','_self');window.close();</script>";
+                            echo '删除记录成功';
                         
                     }else{
                         echo '文件不存在';
@@ -70,6 +61,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
-?>
-</body>
-</html>
