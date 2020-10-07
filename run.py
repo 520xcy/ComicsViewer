@@ -6,7 +6,7 @@ import time
 import shelve
 import urllib.parse
 from PIL import Image
-from fun import sort_filename
+from fun import re_sort
 
 # 默认templete模板生成目录与h资源目录相差2层
 BASE_TEMP_DEEPTH = 1
@@ -134,7 +134,8 @@ def createImgList(content_path):
     try:
         # {True: imgs.sort(key=lambda x: int(x[:-4])), False: imgs.sort()}[imgs[3][:-4].isdigit()]
         # imgs.sort(key=lambda x: x[:-4])
-        imgs = sort_filename.sort_insert_filename(imgs)
+        # imgs = sort_filename.sort_insert_filename(imgs)
+        imgs.sort(key=re_sort.sort_key)
     except:
         imgs.sort()
         pass
@@ -168,19 +169,16 @@ def createContentHtml(contentPath):
 
 
 def pushData(data):
-    dir, suffix = os.path.splitext(data[2])
-    outname = '{}-out{}'.format(dir, suffix)
     try:
-        if not os.path.isfile(data[1]+'/'+outname):
+        dir, suffix = os.path.splitext(data[2])
+        if not dir[-4:] == '-out':
             print('生成封面缩略图...')
             compress_image(data[1]+'/'+data[2])
             resize_image(data[1]+'/'+data[2])
+            data[2] = get_outfile(data[2])
     except:
         print('生成封面缩略图失败')
-        outname = data[2]
         pass
-    else:
-        data[2] = outname
     with shelve.open(DATA_PATH) as write:
         write[data[0]] = data
 
