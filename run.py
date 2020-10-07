@@ -12,7 +12,7 @@ import copy
 from PIL import Image
 
 from fun import mysqlite as sqlite
-from fun import sort_filename
+from fun import re_sort
 
 ORDER_FIELD = "title"
 
@@ -160,7 +160,8 @@ def createImgList(content_path):
     try:
         # {True: imgs.sort(key=lambda x: int(x[:-4])), False: imgs.sort()}[imgs[3][:-4].isdigit()]
         # imgs.sort(key=lambda x: x[:-4])
-        imgs = sort_filename.sort_insert_filename(imgs)
+        # imgs = sort_filename.sort_insert_filename(imgs)
+        imgs.sort(key=re_sort.sort_key)
     except:
         imgs.sort()
         pass
@@ -196,19 +197,17 @@ def createContentHtml(contentPath):
 
 def pushData(data):
     ctime = os.path.getctime(data[1]+'/'+data[2])
-    dir, suffix = os.path.splitext(data[2])
-    outname = '{}-out{}'.format(dir, suffix)
     try:
-        if not os.path.isfile(data[1]+'/'+outname):
+        dir, suffix = os.path.splitext(data[2])
+        if not dir[-4:] == '-out':
             print('生成封面缩略图...')
             compress_image(data[1]+'/'+data[2])
             resize_image(data[1]+'/'+data[2])
+            data[2] = get_outfile(data[2])
     except:
         print('生成封面缩略图失败')
-        outname = data[2]
         pass
-    else:
-        data[2] = outname
+
     obj = {
         'title': data[0],
         'path': data[1],
