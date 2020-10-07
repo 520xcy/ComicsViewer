@@ -208,7 +208,7 @@ $_ORDER = $_GET['order'];
                 let that = $(this);
                 let path = that.data('id');
                 let data = 'action=remove&id=' + path + '&_token=<?php echo $_token ?>';
-                Ajax.post('/php/action.php', data, function() {
+                Ajax.post('php/action.php', data, function() {
                     alert(this);
                     that.parents('li').remove();
                 })
