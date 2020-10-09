@@ -1,10 +1,3 @@
-<?php
-// ini_set("display_errors", "On");
-require_once './php/config.inc.php';
-session_start();
-$_token             = crypt(md5(date('Y-m-d H:m:s') . session_id()), 'xiang');
-$_SESSION['_token'] = $_token;
-?>
 <!DOCTYPE html>
 <html>
 
@@ -117,7 +110,7 @@ $_SESSION['_token'] = $_token;
         <div class="box">
             <p id="copyright">
                 <span class="copyright">
-                    <a href="https://github.com/masazumi-github/ComicsViewer" target="_blank">See at Github</a>
+                    <a href="https://github.com/520xcy/ComicsViewer" target="_blank">See at Github</a>
                 </span>
         </div>
     </footer>

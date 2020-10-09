@@ -4,8 +4,8 @@ require_once './php/config.inc.php';
 session_start();
 $_token             = crypt(md5(date('Y-m-d H:m:s') . session_id()), 'xiang');
 $_SESSION['_token'] = $_token;
-$_ORDER = $_GET['order'];
-
+$_ORDER = isset($_GET['order']) ? $_GET['order'] : null;
+$_TITLE = isset($_GET['title']) ? $_GET['title'] : null;
 ?>
 <!DOCTYPE html>
 <html>
@@ -100,29 +100,44 @@ $_ORDER = $_GET['order'];
             font-size: 12px;
             text-align: right
         }
+
+        #search {
+            color: #fff;
+            padding: 1% 2%;
+        }
+
+        #search input {
+            width: 70%;
+        }
     </style>
 </head>
 
 <body class="page page-id-15 page-template page-template-list_tag-php">
 
     <div id="container">
+        <div id="search">
+            <form method="get">
+                <label for="title">搜索：</label><input type="text" name="title" value="<?php echo $_TITLE ?>"><input type="hidden" name="order" value="<?php echo $_ORDER ?>"><button>Go</button>
+            </form>
+        </div>
         <div id="contents">
             <section class="leftbox l1">
 
                 <ul class="file_list">
                     <?php
                     $m      = new Model();
+                    $where = $_TITLE ? 'title LIKE \'%' . $_TITLE . '%\'' : '';
                     switch ($_ORDER) {
                         case 'asc':
-                            $result = $m->fetchAll('files', '*', '', 'created_at asc, title asc');
+                            $result = $m->fetchAll('files', '*', $where, 'created_at asc, title asc');
                             break;
 
                         case 'desc':
-                            $result = $m->fetchAll('files', '*', '', 'created_at desc, title asc');
+                            $result = $m->fetchAll('files', '*', $where, 'created_at desc, title asc');
                             break;
 
                         default:
-                            $result = $m->fetchAll('files', '*', '', 'title');
+                            $result = $m->fetchAll('files', '*', $where, 'title');
                     }
 
                     foreach ($result as $row) {
@@ -153,7 +168,7 @@ $_ORDER = $_GET['order'];
         <div class="box">
             <p id="copyright">
                 <span class="copyright">
-                    <a href="https://github.com/masazumi-github/ComicsViewer" target="_blank">See at Github</a>
+                    <a href="https://github.com/520xcy/ComicsViewer" target="_blank">See at Github</a>
                 </span>
         </div>
     </footer>
