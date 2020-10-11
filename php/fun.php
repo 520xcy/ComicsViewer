@@ -18,7 +18,7 @@ function test_input($data) {//输入转义
   }
   
 function pswmd5($pass){//MD5算法
-	$pass=md5(crypt($pass,substr($pass,0,2)));
+	$pass=crypt(md5($pass), 'xiang');;
 	return $pass;
 }
 

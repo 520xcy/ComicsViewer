@@ -107,7 +107,11 @@ $_TITLE = isset($_GET['title']) ? $_GET['title'] : null;
         }
 
         #search input {
-            width: 70%;
+            width: 50%;
+        }
+
+        #search select{
+            width: 20%;
         }
     </style>
 </head>
@@ -117,7 +121,14 @@ $_TITLE = isset($_GET['title']) ? $_GET['title'] : null;
     <div id="container">
         <div id="search">
             <form method="get">
-                <label for="title">搜索：</label><input type="text" name="title" value="<?php echo $_TITLE ?>"><input type="hidden" name="order" value="<?php echo $_ORDER ?>"><button>Go</button>
+                <label for="title">搜索：</label>
+                <input type="text" name="title" value="<?php echo $_TITLE ?>">
+                <select name="order">
+                    <option value="title">名称</option>
+                    <option value="asc" <?php if($_ORDER=='asc') echo 'selected' ?>>日期正序</option>
+                    <option value="desc" <?php if($_ORDER=='desc') echo 'selected' ?>>日期倒序</option>
+                </select>
+                <button>Go</button>
             </form>
         </div>
         <div id="contents">

@@ -284,6 +284,7 @@ if __name__ == '__main__':
         if sys.argv[1] == 'date':
             ORDER_FIELD = 'created_at'
     DB.query('CREATE TABLE IF NOT EXISTS files(id INTEGER primary key AUTOINCREMENT,title text, path text,pic text, count int, created_at text)')
+    DB.query('CREATE INDEX "index" on files(title ASC, created_at ASC)')
     contentPaths = []
     hasDetail = []
     print('开始遍历文件夹...')
