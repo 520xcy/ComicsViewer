@@ -48,6 +48,28 @@ def TimeStampToTime(timestamp):
     return time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
 
 
+'''文件处理'''
+
+
+def checkFileExist(fileURI):
+    if os.path.isfile(fileURI):
+        return True
+    return False
+
+
+def checkFolder(src):
+    if not '#' in src:
+        return src
+    dst = str.replace(src, '#', '_')
+    try:
+        os.rename(src, dst)
+        return dst
+        pass
+    except:
+        return src
+        pass
+
+
 '''
 :图片处理部分
 '''
@@ -59,7 +81,7 @@ def get_size(file):
     return size / 1024
 
 
-def get_outfile(infile, outfile = ''):
+def get_outfile(infile, outfile=''):
     if outfile:
         return outfile
     dir, suffix = os.path.splitext(infile)
@@ -162,6 +184,7 @@ def createImgList(content_path):
         # imgs.sort(key=lambda x: x[:-4])
         # imgs = sort_filename.sort_insert_filename(imgs)
         imgs.sort(key=re_sort.sort_key)
+        pass
     except:
         imgs.sort()
         pass
@@ -188,8 +211,10 @@ def createContentHtml(contentPath):
         count)).replace(r"{first_img}", imgData[0])
     try:
         htmlStr = htmlStr.replace(r"{next_img}", imgData[1])
+        pass
     except IndexError:
         htmlStr = htmlStr.replace(r"{next_img}", imgData[0])
+        pass
     print('生成详情页...')
     output2Html(htmlStr, contentPath + CONTENT_HTML)
     return [title, contentPath, imgData[0], count]
@@ -204,6 +229,7 @@ def pushData(data):
             compress_image(data[1]+'/'+data[2])
             resize_image(data[1]+'/'+data[2])
             data[2] = get_outfile(data[2])
+            pass
     except:
         print('生成封面缩略图失败')
         pass
@@ -252,27 +278,13 @@ def createIndexHtml():
     output2Html(indexStr, BASE_PATH + INDEX_HTML)
 
 
-def checkFileExist(fileURI):
-    if os.path.isfile(fileURI):
-        return True
-    return False
-
-
-def getContentPaths(path):
-    for _path in os.listdir(path):
-        _dir = path + "/" + _path
-        if os.path.isdir(_dir):
-            contentPaths.append(_dir)
-        else:
-            return contentPaths
-
-
 def gci(filepath):
     # 遍历filepath下所有文件，包括子目录
     files = os.listdir(filepath)
     for fi in files:
         fi_d = os.path.join(filepath, fi)
         if os.path.isdir(fi_d):
+            fi_d = checkFolder(fi_d)
             contentPaths.append(fi_d)
             gci(fi_d)
         if '/'+fi == CONTENT_HTML:
