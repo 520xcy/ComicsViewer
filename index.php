@@ -140,11 +140,11 @@ $_TITLE = isset($_GET['title']) ? $_GET['title'] : null;
                     $where = $_TITLE ? 'title LIKE \'%' . $_TITLE . '%\'' : '';
                     switch ($_ORDER) {
                         case 'asc':
-                            $result = $m->fetchAll('files', '*', $where, 'created_at asc, title asc');
+                            $result = $m->fetchAll('files', '*', $where, 'created_at');
                             break;
 
                         case 'desc':
-                            $result = $m->fetchAll('files', '*', $where, 'created_at desc, title asc');
+                            $result = $m->fetchAll('files', '*', $where, 'created_at desc');
                             break;
 
                         default:

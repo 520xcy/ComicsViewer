@@ -59,7 +59,7 @@ def get_size(file):
     return size / 1024
 
 
-def get_outfile(infile, outfile):
+def get_outfile(infile, outfile = ''):
     if outfile:
         return outfile
     dir, suffix = os.path.splitext(infile)
