@@ -30,6 +30,7 @@ function removeDir($dirName)
     } else {
         throw new Exception('删除' . $dirName . '出错');
     }
+    return true;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -45,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     foreach ($res as $data) {
                     }
                     if (!empty($data)) {
-                        if (!removeDir(ROOT_PATH . '/../' . $data['path'])) throw new Exception('删除' . $data['path'] . '出错');;
+                        if (!removeDir(ROOT_PATH . '/../' . $data['path'])) throw new Exception('删除' . ROOT_PATH . '/../' . $data['path'] . '出错');;
                         $res = $m->del('files', 'id=' . $id);
                         echo '删除记录成功';
                     } else {
