@@ -121,7 +121,7 @@ $_TITLE = isset($_GET['title']) ? $_GET['title'] : null;
     <div id="container">
         <div id="search">
             <form method="get">
-                <label for="title">搜索：</label>
+                <label for="title">搜索</label>
                 <input type="text" name="title" value="<?php echo $_TITLE ?>">
                 <select name="order">
                     <option value="title">名称</option>
